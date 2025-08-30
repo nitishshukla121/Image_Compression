@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Image Compressor</title>
+    <style>
+        body { font-family: Arial, sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; background-color: #f4f4f4; }
+        .container { background-color: #fff; padding: 2em; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); text-align: center; }
+        h1 { color: #333; }
+        form { margin-top: 1.5em; }
+        input[type="file"], input[type="range"] { margin-bottom: 1em; }
+        input[type="submit"] { background-color: #007bff; color: white; padding: 0.75em 1.5em; border: none; border-radius: 5px; cursor: pointer; }
+        input[type="submit"]:hover { background-color: #0056b3; }
+        .quality-slider { display: flex; align-items: center; justify-content: center; margin-top: 1em; }
+        .quality-slider label { margin-right: 1em; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Image Compressor</h1>
+        <p>Upload an image to compress it.</p>
+
+        <form action="/compress" method="post" enctype="multipart/form-data">
+            <label for="file">Choose Image:</label>
+            <input type="file" id="file" name="file" accept="image/*" required>
+            
+            <div class="quality-slider">
+                <label for="quality">Quality (0.0 - 1.0):</label>
+                <input type="range" id="quality" name="quality" min="0.0" max="1.0" step="0.01" value="0.7" oninput="this.nextElementSibling.value=this.value">
+                <output for="quality">0.7</output>
+            </div>
+            
+            <input type="submit" value="Compress Image">
+        </form>
+    </div>
+</body>
+</html>
