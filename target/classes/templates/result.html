@@ -4,27 +4,120 @@
     <meta charset="UTF-8">
     <title>Compression Results</title>
     <style>
-        body { font-family: Arial, sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; background-color: #f4f4f4; }
-        .container { background-color: #fff; padding: 2em; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); text-align: center; }
-        h1 { color: #333; }
-        p { margin-bottom: 0.5em; }
-        .metrics { text-align: left; margin-bottom: 1em; }
-        .button { background-color: #007bff; color: white; padding: 0.75em 1.5em; border-radius: 5px; text-decoration: none; display: inline-block; }
-        .button:hover { background-color: #0056b3; }
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #121212;
+            color: #e0e0e0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 2em;
+            box-sizing: border-box;
+        }
+
+        .container {
+            background-color: #1e1e1e;
+            padding: 2.5em;
+            border-radius: 12px;
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.2), 0 0 30px rgba(0, 255, 255, 0.1);
+            text-align: center;
+            width: 100%;
+            max-width: 600px;
+            border: 1px solid #333;
+            transition: box-shadow 0.3s ease-in-out;
+        }
+
+        .container:hover {
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.4), 0 0 40px rgba(0, 255, 255, 0.2);
+        }
+
+        h1 {
+            color: #00ffff;
+            text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+            margin-bottom: 0.5em;
+        }
+        
+        #compressed-image-preview {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            border: 2px solid #555;
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+            margin-bottom: 1.5em;
+        }
+
+        .metrics { 
+            text-align: left; 
+            margin-bottom: 1em; 
+            padding: 1em;
+            background-color: #2a2a2a;
+            border-radius: 8px;
+        }
+        
+        .metrics p {
+            margin: 0.5em 0;
+            color: #b0b0b0;
+        }
+        
+        .metrics strong {
+            color: #e0e0e0;
+        }
+        
+        .download-button { 
+            background-color: #00ffff;
+            color: #121212;
+            font-weight: 600;
+            padding: 0.85em 2.5em;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 2em;
+            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.4);
+        }
+
+        .download-button:hover {
+            background-color: #00e6e6;
+            transform: translateY(-2px);
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.6);
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 600px) {
+            .container {
+                padding: 1.5em;
+            }
+        }
+        
+        
     </style>
 </head>
 <body>
+
+
+
     <div class="container">
-        <h1>Compression Successful!</h1>
+        <h1>Compression Successful! 🎉</h1>
+
+       
 
         <div class="metrics">
             <p><strong>File Name:</strong> <span th:text="${response.fileName}"></span></p>
-            <p><strong>Original Size:</strong> <span th:text="${response.originalSize}"></span> bytes</p>
-            <p><strong>Compressed Size:</strong> <span th:text="${response.compressedSize}"></span> bytes</p>
+            <p><strong>Original Size:</strong> <span th:text="${#numbers.formatDecimal(response.originalSize, 0, 'COMMA', 2, 'POINT')}"></span> KB</p>
+            <p><strong>Compressed Size:</strong> <span th:text="${#numbers.formatDecimal(response.compressedSize, 0, 'COMMA', 2, 'POINT')}"></span> KB</p>
             <p><strong>Compression Percentage:</strong> <span th:text="${#numbers.formatDecimal(response.compressionPercentage, 0, 2)}"></span>%</p>
         </div>
 
-<a th:href="@{'/download?filename=' + ${response.compressedFileName}}" class="button">Download Image</a>
+        <a th:href="@{'/download?filename=' + ${response.compressedFileName}}" class="download-button">Download Image</a>
     </div>
+    
+     
 </body>
 </html>
