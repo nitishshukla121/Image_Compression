@@ -1,0 +1,8 @@
+com\example\Model\CompressionResponse.class
+com\example\Util\LossyImageCompressor.class
+com\example\Controller\CompressionController.class
+com\example\Controller\WebController.class
+com\example\Util\RLEImageCompressor.class
+com\example\CompressorApplication.class
+com\example\ServiceImpl\CompressionServiceImpl.class
+com\example\Service\CompressionService.class
