@@ -2,14 +2,25 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Compression Results</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+        :root {
+            --background-color: #121212;
+            --container-color: #1e1e1e;
+            --primary-glow: #00ffff;
+            --text-color: #e0e0e0;
+            --light-text-color: #b0b0b0;
+        }
 
         body {
             font-family: 'Poppins', sans-serif;
-            background-color: #121212;
-            color: #e0e0e0;
+            background-color: var(--background-color);
+            color: var(--text-color);
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -18,10 +29,30 @@
             margin: 0;
             padding: 2em;
             box-sizing: border-box;
+            position: relative;
+            overflow-x: hidden; /* This is the key fix for horizontal scrolling */
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: -20%;
+            left: -20%;
+            width: 140%;
+            height: 140%;
+            background: radial-gradient(circle at center, rgba(0, 255, 255, 0.05), transparent 70%);
+            animation: pulse-glow 15s infinite alternate ease-in-out;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        @keyframes pulse-glow {
+            from { transform: scale(1); opacity: 0.5; }
+            to { transform: scale(1.1); opacity: 0.7; }
         }
 
         .container {
-            background-color: #1e1e1e;
+            background-color: var(--container-color);
             padding: 2.5em;
             border-radius: 12px;
             box-shadow: 0 0 15px rgba(0, 255, 255, 0.2), 0 0 30px rgba(0, 255, 255, 0.1);
@@ -30,6 +61,10 @@
             max-width: 600px;
             border: 1px solid #333;
             transition: box-shadow 0.3s ease-in-out;
+            z-index: 5;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
         .container:hover {
@@ -37,21 +72,55 @@
         }
 
         h1 {
-            color: #00ffff;
+            color: var(--primary-glow);
             text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
             margin-bottom: 0.5em;
         }
+
+        /* New styles for the image comparison layout */
+        .image-comparison-wrapper {
+            width: 100%;
+            padding: 1em 0;
+        }
         
-        #compressed-image-preview {
+        .image-comparison {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        @media (min-width: 600px) {
+            .image-comparison {
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: flex-start;
+            }
+        }
+        
+        .image-container {
+            flex: 1;
+            text-align: center;
+            width: 100%;
+            margin-bottom: 1em;
+        }
+        
+        .image-container h3 {
+            color: var(--light-text-color);
+            font-size: 1em;
+            margin-bottom: 0.5em;
+        }
+
+        .image-container img {
             max-width: 100%;
             height: auto;
             border-radius: 8px;
             border: 2px solid #555;
             box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
-            margin-bottom: 1.5em;
         }
 
         .metrics { 
+            width: 100%;
             text-align: left; 
             margin-bottom: 1em; 
             padding: 1em;
@@ -61,16 +130,16 @@
         
         .metrics p {
             margin: 0.5em 0;
-            color: #b0b0b0;
+            color: var(--light-text-color);
         }
         
         .metrics strong {
-            color: #e0e0e0;
+            color: var(--text-color);
         }
         
-        .download-button { 
-            background-color: #00ffff;
-            color: #121212;
+        .download-button, .go-back-button { 
+            background-color: var(--primary-glow);
+            color: var(--background-color);
             font-weight: 600;
             padding: 0.85em 2.5em;
             border: none;
@@ -83,31 +152,49 @@
             box-shadow: 0 0 15px rgba(0, 255, 255, 0.4);
         }
 
-        .download-button:hover {
+        .download-button:hover, .go-back-button:hover {
             background-color: #00e6e6;
             transform: translateY(-2px);
             box-shadow: 0 0 20px rgba(0, 255, 255, 0.6);
         }
 
-        /* Responsive adjustments */
-        @media (max-width: 600px) {
-            .container {
-                padding: 1.5em;
+        .button-group {
+            display: flex;
+            flex-direction: column;
+            gap: 1em;
+            margin-top: 1em;
+            width: 100%;
+            align-items: center;
+        }
+
+        @media (min-width: 600px) {
+            .button-group {
+                flex-direction: row;
+                justify-content: center;
             }
         }
-        
-        
     </style>
 </head>
 <body>
-
-
-
     <div class="container">
         <h1>Compression Successful! 🎉</h1>
 
-       
+        <div class="image-comparison-wrapper">
+            <div class="image-comparison">
+                <!-- Original Image Preview -->
+                <div th:if="${originalImageSrc}" class="image-container">
+                    <h3>Original</h3>
+                    <img th:src="${originalImageSrc}" alt="Original Image Preview">
+                </div>
 
+                <!-- Compressed Image Preview -->
+                <div th:if="${imageSrc}" class="image-container">
+                    <h3>Compressed</h3>
+                    <img th:src="${imageSrc}" alt="Compressed Image Preview">
+                </div>
+            </div>
+        </div>
+        
         <div class="metrics">
             <p><strong>File Name:</strong> <span th:text="${response.fileName}"></span></p>
             <p><strong>Original Size:</strong> <span th:text="${#numbers.formatDecimal(response.originalSize, 0, 'COMMA', 2, 'POINT')}"></span> KB</p>
@@ -115,9 +202,10 @@
             <p><strong>Compression Percentage:</strong> <span th:text="${#numbers.formatDecimal(response.compressionPercentage, 0, 2)}"></span>%</p>
         </div>
 
-        <a th:href="@{'/download?filename=' + ${response.compressedFileName}}" class="download-button">Download Image</a>
+        <div class="button-group">
+            <a th:href="@{'/download?filename=' + ${response.compressedFileName}}" class="download-button">Download Image</a>
+            <a th:href="@{/}" class="go-back-button">Compress Another Image</a>
+        </div>
     </div>
-    
-     
 </body>
 </html>

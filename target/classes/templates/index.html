@@ -2,6 +2,7 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Image Compressor</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -23,12 +24,13 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            /* FIX: Removed overflow: hidden so the page can scroll */
-            /* FIX: Removed min-height to allow content to dictate page height */
+            justify-content: center;
+            min-height: 100vh;
             margin: 0;
-            padding: 2em;
+            padding: 2vw;
             box-sizing: border-box;
             position: relative;
+            overflow-x: hidden;
         }
         
         body::before {
@@ -106,6 +108,7 @@
             z-index: 5;
             display: flex;
             flex-direction: column;
+            align-items: center;
         }
 
         .container:hover {
@@ -133,6 +136,8 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+            width: 100%;
+            box-sizing: border-box;
         }
 
         .drop-area:hover {
@@ -164,6 +169,12 @@
             display: none;
             margin-top: 1.5em;
             text-align: center;
+            width: 100%;
+        }
+        
+        .original-size-text {
+            color: var(--light-text-color);
+            margin: 0.5em 0 1em;
         }
 
         #image-preview {
@@ -181,6 +192,8 @@
             align-items: center;
             justify-content: center;
             margin-top: 1.5em;
+            flex-wrap: wrap;
+            width: 100%;
         }
 
         .slider-container label {
@@ -196,6 +209,7 @@
             height: 8px;
             border-radius: 5px;
             outline: none;
+            flex: 1;
         }
 
         input[type="range"]::-webkit-slider-thumb {
@@ -294,13 +308,13 @@
                 
                 <div id="preview-section" class="image-preview-container">
                     <img id="image-preview" src="#" alt="Selected Image Preview">
-                    <p>Selected image:</p>
+                    <p class="original-size-text">Original Size: <span id="original-size-display"></span></p>
                 </div>
 
                 <div class="slider-container">
-                    <label for="quality">Quality (0.0 - 1.0):</label>
-                    <input type="range" id="quality" name="quality" min="0.0" max="1.0" step="0.01" value="0.7">
-                    <output for="quality">0.7</output>
+                    <label for="quality">Quality (%):</label>
+                    <input type="range" id="quality" name="quality" min="0" max="100" step="1" value="70">
+                    <output for="quality">70%</output>
                 </div>
                 
                 <input type="submit" value="Compress Image">
@@ -335,6 +349,7 @@
         const aboutSection = document.getElementById('about-section');
         const aboutLink = document.getElementById('about-link');
         const goBackLink = document.getElementById('go-back-link');
+        const originalSizeDisplay = document.getElementById('original-size-display');
 
         // Event listeners to toggle sections
         aboutLink.addEventListener('click', (e) => {
@@ -351,7 +366,7 @@
 
         // Update output for slider
         qualitySlider.addEventListener('input', () => {
-            qualityOutput.textContent = qualitySlider.value;
+            qualityOutput.textContent = `${qualitySlider.value}%`;
         });
 
         // Handle file selection
@@ -362,6 +377,10 @@
                 reader.onload = (e) => {
                     imagePreview.src = e.target.result;
                     previewContainer.style.display = 'block';
+                    
+                    // Display the original size in KB
+                    const originalSizeKB = (file.size / 1024).toFixed(2);
+                    originalSizeDisplay.textContent = `${originalSizeKB} KB`;
                 };
                 reader.readAsDataURL(file);
                 dropArea.querySelector('.drop-area-text').textContent = 'Image Selected';
@@ -369,6 +388,7 @@
             } else {
                 previewContainer.style.display = 'none';
                 dropArea.querySelector('.drop-area-text').textContent = 'Select Image';
+                originalSizeDisplay.textContent = ''; // Clear size display if no file
             }
         });
 

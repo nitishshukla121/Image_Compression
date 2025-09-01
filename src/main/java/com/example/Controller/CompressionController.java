@@ -9,15 +9,14 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.io.IOException;
-
+import java.util.Base64;
 
 @Controller
 public class CompressionController {
 
     private final CompressionService compressionService;
-   
+
     public CompressionController(CompressionService compressionService) {
         this.compressionService = compressionService;
     }
@@ -26,10 +25,30 @@ public class CompressionController {
     public String compressImage(@RequestParam("file") MultipartFile file,
                                 @RequestParam("quality") float quality,
                                 Model model) throws IOException {
+    	
+    	// ... inside the @PostMapping("/compress") method
+    	byte[] originalData = file.getBytes();
+    	String base64OriginalImage = Base64.getEncoder().encodeToString(originalData);
+    	String originalImageSrc = "data:" + file.getContentType() + ";base64," + base64OriginalImage;
+
+    	// Add this to your model
+    	model.addAttribute("originalImageSrc", originalImageSrc);
+    	// ... rest of your code
+
+        // Use the new service method to get the compressed data directly for the preview
+        byte[] compressedData = compressionService.compressImageAndReturnData(file, quality);
         
+        // Use the original service method to get the metadata and save the file for download
         CompressionResponse response = compressionService.compressImage(file, quality);
+
+        // Base64 encode the compressed image data for in-line display
+        String base64Image = Base64.getEncoder().encodeToString(compressedData);
+        String imageSrc = "data:image/jpeg;base64," + base64Image;
+
+        // Add both the response object and the image source to the model
         model.addAttribute("response", response);
-        
+        model.addAttribute("imageSrc", imageSrc);
+
         return "result";
     }
 
@@ -43,37 +62,4 @@ public class CompressionController {
 
         return ResponseEntity.ok().headers(headers).body(compressedData);
     }
-    
-//    @GetMapping("/display")
-//    public ResponseEntity<byte[]> displayImage(@RequestParam("filename") String filename) throws IOException {
-//        Path imagePath = Paths.get(COMPRESSED_IMAGE_PATH + filename);
-//
-//        logger.info("Attempting to load image for display from path: " + imagePath.toAbsolutePath());
-//
-//        try {
-//            if (Files.exists(imagePath) && Files.isReadable(imagePath)) {
-//                byte[] imageBytes = Files.readAllBytes(imagePath);
-//                HttpHeaders headers = new HttpHeaders();
-//
-//                String fileExtension = filename.substring(filename.lastIndexOf(".") + 1).toLowerCase();
-//                if (fileExtension.equals("jpg") || fileExtension.equals("jpeg")) {
-//                    headers.setContentType(MediaType.IMAGE_JPEG);
-//                } else if (fileExtension.equals("png")) {
-//                    headers.setContentType(MediaType.IMAGE_PNG);
-//                }
-//                
-//                headers.setContentLength(imageBytes.length);
-//                return new ResponseEntity<>(imageBytes, headers, HttpStatus.OK);
-//            } else {
-//                logger.error("File not found or not readable: " + imagePath.toAbsolutePath());
-//                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-//            }
-//        } catch (NoSuchFileException e) {
-//            logger.error("File not found: " + imagePath.toAbsolutePath());
-//            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-//        } catch (IOException e) {
-//            logger.error("Error reading file: " + imagePath.toAbsolutePath(), e);
-//            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-//        }
-    
 }
