@@ -1,8 +1,0 @@
-D:\bcaproject\Compressor\src\main\java\com\example\CompressorApplication.java
-D:\bcaproject\Compressor\src\main\java\com\example\Controller\CompressionController.java
-D:\bcaproject\Compressor\src\main\java\com\example\Controller\WebController.java
-D:\bcaproject\Compressor\src\main\java\com\example\Model\CompressionResponse.java
-D:\bcaproject\Compressor\src\main\java\com\example\Service\CompressionService.java
-D:\bcaproject\Compressor\src\main\java\com\example\ServiceImpl\CompressionServiceImpl.java
-D:\bcaproject\Compressor\src\main\java\com\example\Util\LossyImageCompressor.java
-D:\bcaproject\Compressor\src\main\java\com\example\Util\RLEImageCompressor.java
